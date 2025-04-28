@@ -1,9 +1,8 @@
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
 import dbConnect from '@/lib/db';
 import Food from '@/models/Food';
 import User from '@/models/User';
-import { authOptions } from '@/lib/auth';
+import { auth } from '@/auth';
 
 // Get all available food donations
 export async function GET(req: Request) {
@@ -96,7 +95,7 @@ export async function POST(req: Request) {
     await dbConnect();
     
     // Verify user is authenticated
-    const session = await getServerSession(authOptions);
+    const session = await auth();
     if (!session?.user) {
       return NextResponse.json(
         { error: 'You must be logged in to create a food donation' },

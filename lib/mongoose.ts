@@ -39,15 +39,28 @@ export async function connectToDB() {
   if (!cached.promise) {
     const opts = {
       bufferCommands: false,
+      serverSelectionTimeoutMS: 30000, // Increase timeout to 30 seconds
+      connectTimeoutMS: 30000,
+      socketTimeoutMS: 60000,
     };
 
-    cached.promise = mongoose.connect(MONGODB_URI, opts);
+    console.log(`Connecting to MongoDB at ${MONGODB_URI.substring(0, MONGODB_URI.indexOf('@') > 0 ? MONGODB_URI.indexOf('@') : 10)}...`);
+    
+    try {
+      cached.promise = mongoose.connect(MONGODB_URI, opts);
+    } catch (error) {
+      console.error('Initial MongoDB connection error:', error);
+      cached.promise = null;
+      throw error;
+    }
   }
-
+  
   try {
     cached.conn = await cached.promise;
+    console.log('MongoDB connected successfully');
   } catch (error) {
     cached.promise = null;
+    console.error('MongoDB connection error:', error);
     throw error;
   }
 
