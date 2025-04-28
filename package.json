@@ -3,13 +3,16 @@
   "version": "1.0.0",
   "description": "A platform to connect food donors with receivers to reduce food waste",
   "main": "index.js",
+  "engines": {
+    "node": ">=16.0.0"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "railway:build": "npm install",
-    "railway:start": "npm run build && npm run start"
+    "railway:start": "npm start"
   },
   "keywords": [
     "food waste",

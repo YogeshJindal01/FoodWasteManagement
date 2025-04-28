@@ -28,8 +28,6 @@ const nextConfig = {
   },
   // External packages for server components
   serverExternalPackages: ['mongoose'],
-  // Output standalone for Docker
-  output: 'standalone',
 }
 
 module.exports = nextConfig 
