@@ -46,8 +46,9 @@ USER nextjs
 
 EXPOSE 3000
 
-ENV PORT 3000
-ENV HOSTNAME "0.0.0.0"
+# Railway expects PORT as an integer
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
 
 # server.js is created by next build
 CMD ["node", "server.js"] 
