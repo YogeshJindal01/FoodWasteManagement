@@ -8,9 +8,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "railway:build": "npm install --force && npm run build",
-    "railway:start": "npm run start",
-    "postinstall": "npm run build"
+    "railway:build": "npm install",
+    "railway:start": "npm run build && npm run start"
   },
   "keywords": [
     "food waste",
