@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import timeSince from '@/lib/timeSince';
+import { fetchPatch } from './utils/fetchWithRailway';
 
 // Extend the user type to include role
 interface ExtendedUser {
@@ -97,21 +98,10 @@ export default function FoodCard({ food, onStatusChange }: FoodCardProps) {
         return;
       }
       
-      const response = await fetch(`/api/food/${food._id}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          status: 'claimed',
-          ngoDetails: ngoDetails
-        }),
+      await fetchPatch(`/api/food/${food._id}`, {
+        status: 'claimed',
+        ngoDetails: ngoDetails
       });
-      
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Failed to claim food');
-      }
       
       // Close the modal
       setShowNgoDetailsModal(false);

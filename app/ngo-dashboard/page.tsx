@@ -8,6 +8,7 @@ import FoodCard from '@/components/FoodCard';
 import RateRestaurant from '@/components/RateRestaurant';
 import { FaSearch, FaCheckCircle, FaMapMarkerAlt, FaFilter, FaExclamationCircle } from 'react-icons/fa';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import { fetchGet, fetchPatch } from '@/components/utils/fetchWithRailway';
 
 // Extend user type to include role and id
 interface ExtendedUser {
@@ -18,11 +19,14 @@ interface ExtendedUser {
   role?: string;
 }
 
+// Add a proper type definition for the food items
 interface FoodItem {
   _id: string;
   title: string;
   description: string;
-  status: string;
+  photo: string;
+  status: 'available' | 'claimed' | 'completed' | 'expired';
+  createdAt: string;
   donorId: {
     _id: string;
     name: string;
@@ -30,7 +34,18 @@ interface FoodItem {
     rating: number;
     ratingCount: number;
   };
-  [key: string]: any; // Allow other properties
+  isExpired?: boolean;
+  claimedBy?: {
+    _id: string;
+    name: string;
+    email?: string;
+  };
+  ngoDetails?: {
+    name: string;
+    phone?: string;
+    pickupTime?: string;
+    notes?: string;
+  };
 }
 
 export default function NGODashboard() {
@@ -65,11 +80,7 @@ export default function NGODashboard() {
         setError('');
         
         if (activeTab === 'available') {
-          const response = await fetch('/api/food?status=available');
-          if (!response.ok) {
-            throw new Error('Failed to fetch available food');
-          }
-          const data = await response.json();
+          const data = await fetchGet<FoodItem[]>('/api/food?status=available');
           setFoods(data);
         } else if (activeTab === 'claimed' || activeTab === 'completed') {
           const userId = (session?.user as ExtendedUser)?.id;
@@ -77,11 +88,7 @@ export default function NGODashboard() {
             throw new Error('User ID not found');
           }
           
-          const response = await fetch(`/api/food?status=${activeTab}&userId=${userId}&userRole=ngo`);
-          if (!response.ok) {
-            throw new Error(`Failed to fetch ${activeTab} food requests`);
-          }
-          const data = await response.json();
+          const data = await fetchGet<FoodItem[]>(`/api/food?status=${activeTab}&userId=${userId}&userRole=ngo`);
           setMyRequests(data);
         }
       } catch (err: any) {
@@ -101,23 +108,11 @@ export default function NGODashboard() {
     try {
       setLoading(true);
       
-      const response = await fetch(`/api/food/${foodId}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ status: newStatus }),
-      });
-      
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || `Failed to update food status to ${newStatus}`);
-      }
+      await fetchPatch(`/api/food/${foodId}`, { status: newStatus });
       
       // Refresh data based on current tab
       if (activeTab === 'available') {
-        const response = await fetch('/api/food?status=available');
-        const data = await response.json();
+        const data = await fetchGet<FoodItem[]>('/api/food?status=available');
         setFoods(data);
       } else {
         const userId = (session?.user as ExtendedUser)?.id;
@@ -125,8 +120,7 @@ export default function NGODashboard() {
           throw new Error('User ID not found');
         }
         
-        const response = await fetch(`/api/food?status=${activeTab}&userId=${userId}&userRole=ngo`);
-        const data = await response.json();
+        const data = await fetchGet<FoodItem[]>(`/api/food?status=${activeTab}&userId=${userId}&userRole=ngo`);
         setMyRequests(data);
       }
       
@@ -154,11 +148,7 @@ export default function NGODashboard() {
   const fetchAvailableFoods = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/food?status=available');
-      if (!response.ok) {
-        throw new Error('Failed to fetch available food');
-      }
-      const data = await response.json();
+      const data = await fetchGet<FoodItem[]>('/api/food?status=available');
       setFoods(data);
     } catch (err: any) {
       setError(err.message || 'An error occurred');
@@ -177,12 +167,7 @@ export default function NGODashboard() {
       
       console.log(`Fetching ${status} requests for NGO: ${userId}`);
       
-      const response = await fetch(`/api/food?status=${status}&userId=${userId}&userRole=ngo`);
-      if (!response.ok) {
-        throw new Error(`Failed to fetch ${status} food requests`);
-      }
-      
-      const data = await response.json();
+      const data = await fetchGet<FoodItem[]>(`/api/food?status=${status}&userId=${userId}&userRole=ngo`);
       console.log(`Received ${data.length} ${status} items:`, data);
       
       setMyRequests(data);

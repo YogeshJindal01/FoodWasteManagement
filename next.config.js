@@ -11,6 +11,9 @@ const nextConfig = {
     // !! WARN !!
     ignoreBuildErrors: true,
   },
+  env: {
+    NEXT_PUBLIC_RAILWAY_URL: 'https://foodwastemanagement-production.up.railway.app',
+  },
 }
 
 module.exports = nextConfig 

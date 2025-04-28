@@ -19,6 +19,7 @@ This platform aims to reduce food waste by providing a simple way for restaurant
 - **Backend**: Next.js API Routes
 - **Database**: MongoDB with Mongoose ODM
 - **Authentication**: NextAuth.js
+- **Deployment**: Railway
 
 ## Setup Instructions
 
@@ -55,6 +56,21 @@ This platform aims to reduce food waste by providing a simple way for restaurant
 
 5. Open your browser and navigate to `http://localhost:3000`
 
+## Deployment
+
+This project is configured for easy deployment to Railway. See the [Railway Deployment Guide](./RAILWAY_DEPLOYMENT.md) for detailed instructions.
+
+The application is currently deployed at: https://foodwastemanagement-production.up.railway.app
+
+When deploying to Railway, ensure you set the following environment variables:
+
+```
+NEXT_PUBLIC_RAILWAY_URL=https://foodwastemanagement-production.up.railway.app
+MONGODB_URI=your_mongodb_connection_string
+NEXTAUTH_URL=https://foodwastemanagement-production.up.railway.app
+NEXTAUTH_SECRET=your_nextauth_secret
+```
+
 ## Project Structure
 
 ```
@@ -67,7 +83,13 @@ food-waste-reduction/
 │   ├── ngo-dashboard/ # NGO dashboard
 │   └── ...
 ├── components/        # Reusable React components
+│   └── utils/         # Utility components and functions
+│       └── fetchWithRailway.ts  # API fetch utilities for Railway deployment
 ├── lib/               # Utility functions and database connection
+│   ├── apiConfig.ts   # API URL configuration for Railway
+│   ├── auth.ts        # NextAuth configuration
+│   ├── db.ts          # Database connection
+│   └── mongoose.ts    # Mongoose connection utilities
 ├── models/            # Mongoose models
 └── styles/            # Global CSS and Tailwind config
 ```
